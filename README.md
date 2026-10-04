@@ -41,7 +41,7 @@
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
 
-
+FitFindr helps a user search for secondhand clothing based on a description, size, and maximum price. It selects a matching item and suggests an outfit using pieces from the user's existing wardrobe. It then creates a short fit-card caption for the completed outfit. If no listing matches, the agent stops and tells the user what they can change in their search.
 
 ---
 
@@ -68,19 +68,17 @@
 
 ### `suggest_outfit`
 
-
 - **What it does:** Suggests an outfit by pairing the selected new item with items from the user's wardrobe.
-- **Inputs:** `new_item` (dictionary), `wardrobe` (list of dictionaries)
-- **Returns:** A dictionary describing the suggested outfit and the wardrobe items selected.
-- **When it has nothing:** Handles an empty wardrobe without crashing and returns an outfit using the new item alone.
+- **Inputs:** `new_item` (dictionary), `wardrobe` (dictionary)
+- **Returns:** A string containing the generated outfit suggestion.
+- **When it has nothing:** Handles an empty wardrobe without crashing and returns styling ideas using the new item alone.
 
 ### `create_fit_card`
 
-
 - **What it does:** Creates a fit-card caption for the completed outfit.
-- **Inputs:** `outfit` (dictionary), `new_item` (dictionary)
+- **Inputs:** `outfit` (string), `new_item` (dictionary)
 - **Returns:** A string containing the generated fit-card caption.
-- **When it has nothing:** Returns a clear message if the required outfit or new item information is missing.
+- **When it has nothing:** Returns a clear message if no outfit suggestion is provided.
 
 ---
 
@@ -109,33 +107,39 @@
 
 ## Sample Run
 
-<!-- Two things go here.
-
-     1. One FULL query and its output, pasted as text.
-     2. Your three per-tool terminal tests — the command and what it printed. -->
-
 **One full query**
 
-```
-$ python app.py ask '...'
+```text
+$ python agent.py
 
+=== A query the data can match ===
+found: Y2K Baby Tee - Butterfly Print — $18.0 on Depop
+outfit: The agent suggested outfits using the selected Y2K Baby Tee and pieces from the user's wardrobe, including baggy straight-leg jeans, chunky white sneakers, and a black crossbody bag.
+fit card: Fluttering straight out of the year 2000 into my everyday rotation. I styled this butterfly baby tee with baggy dark denim and chunky sneakers for an effortless Y2K street-style vibe. Snagged this beauty on Depop for just $18.00!
+
+=== A query it can't ===
+stopped: No matching listings found. Try changing the description, size, or maximum price.
+fit_card is None — it should still be None here
 ```
 
 **The three tools, tested one at a time**
 
-```
+```text
 $ python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
 
+Returned matching listing dictionaries for graphic tees priced at $30 or less.
 ```
 
-```
-$ python -c "from tools import suggest_outfit; ..."
+```text
+$ python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
 
+Returned outfit suggestions using the new item with specific pieces from the user's wardrobe.
 ```
 
-```
-$ python -c "from tools import create_fit_card; ..."
+```text
+$ python -c "from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card('jeans and white sneakers', load_listings()[0]))"
 
+Returned a generated fit-card caption that included the selected item, price, platform, and outfit vibe.
 ```
 
 ---
@@ -151,15 +155,15 @@ $ python -c "from tools import create_fit_card; ..."
 
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- **What I asked for:** I asked AI to help me understand how to implement and test the three FitFindr tools in `tools.py`.
+- **What came back:** AI explained how the search filters, wardrobe handling, and fit-card generation could work and helped me debug the code.
+- **What I changed:** I tested each tool myself in the terminal and adjusted the implementation so `search_listings` returns an empty list when nothing matches and `suggest_outfit` still works with an empty wardrobe.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- **What I asked for:** I asked AI to help me understand the planning-loop requirements and troubleshoot my `agent.py` implementation.
+- **What came back:** AI helped me identify the query-parsing and regex issues and explained how the no-results branch should stop the loop.
+- **What I changed:** I used a simpler regex for extracting the maximum price and tested both the matching and no-match paths with `python agent.py`.
 
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
