@@ -107,9 +107,104 @@ def run_agent(query: str, wardrobe: dict) -> dict:
     """
     session = new_session(query, wardrobe)
 
-    # TODO: delete these two lines and build the loop.
-    session["error"] = "The planning loop isn't built yet — see the TODO in agent.py."
-    return session
+    import re
+
+    description = query
+
+    # Extract maximum price
+    price_match = re.search(
+        r"under[^0-9]*(\d+(?:[.]\d+)?)",
+        query,
+        re.IGNORECASE,
+    )
+
+    max_price = float(price_match.group(1)) if price_match else None
+
+    # Extract size
+    size_match = re.search(
+        r"\bsize\s+(XXS|XS|S|M|L|XL|XXL)\b",
+        query,
+        re.IGNORECASE,
+    )
+
+    size = size_match.group(1).upper() if size_match else None
+
+    # Remove price phrase from description
+    description = re.sub(
+        r"under[^0-9]*\d+(?:[.]\d+)?",
+        "",
+        description,
+        flags=re.IGNORECASE,
+    )
+
+    # Remove size phrase from description
+    description = re.sub(
+        r"\bsize\s+(XXS|XS|S|M|L|XL|XXL)\b",
+        "",
+        description,
+        flags=re.IGNORECASE,
+    )
+
+    # Remove common request words
+    description = re.sub(
+        r"\b(looking for|find me|i want|i need|please|a|an)\b",
+        " ",
+        description,
+        flags=re.IGNORECASE,
+    )
+
+    description = " ".join(description.split())
+
+    # Store parsed values in session
+    session["parsed"] = {
+        "description": description,
+        "size": size,
+        "max_price": max_price,
+    }
+
+    iteration = 0
+
+    while True:
+        iteration += 1
+        trace.check_iterations(iteration)
+
+        # Step 1: Search listings
+        if not session["search_results"]:
+            session["search_results"] = search_listings(
+                session["parsed"]["description"],
+                session["parsed"]["size"],
+                session["parsed"]["max_price"],
+            )
+
+            # Branch: stop when no listings match
+            if not session["search_results"]:
+                session["error"] = (
+                    "No matching listings found. Try changing the description, "
+                    "size, or maximum price."
+                )
+                return session
+
+            # Save selected item in session
+            session["selected_item"] = session["search_results"][0]
+            continue
+
+        # Step 2: Suggest outfit using selected item from session
+        if session["outfit_suggestion"] is None:
+            session["outfit_suggestion"] = suggest_outfit(
+                session["selected_item"],
+                session["wardrobe"],
+            )
+            continue
+
+        # Step 3: Create fit card using values from session
+        if session["fit_card"] is None:
+            session["fit_card"] = create_fit_card(
+                session["outfit_suggestion"],
+                session["selected_item"],
+            )
+            continue
+
+        return session
 
 
 # ── running it directly ───────────────────────────────────────────────────────
