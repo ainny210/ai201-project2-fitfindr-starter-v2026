@@ -59,24 +59,28 @@
 
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+
+
+- **What it does:** Searches the available clothing listings using the user's description, size, and maximum price.
+- **Inputs:** `description` (string), `size` (string), `max_price` (float)
+- **Returns:** A list of matching listing dictionaries containing the listing details.
+- **When it has nothing:** Returns an empty list if no listings match the search.
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+
+- **What it does:** Suggests an outfit by pairing the selected new item with items from the user's wardrobe.
+- **Inputs:** `new_item` (dictionary), `wardrobe` (list of dictionaries)
+- **Returns:** A dictionary describing the suggested outfit and the wardrobe items selected.
+- **When it has nothing:** Handles an empty wardrobe without crashing and returns an outfit using the new item alone.
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+
+- **What it does:** Creates a fit-card caption for the completed outfit.
+- **Inputs:** `outfit` (dictionary), `new_item` (dictionary)
+- **Returns:** A string containing the generated fit-card caption.
+- **When it has nothing:** Returns a clear message if the required outfit or new item information is missing.
 
 ---
 
@@ -93,13 +97,13 @@
      The grader checks your code against what you claim here, so the file and
      function have to be real. -->
 
-**Branch rule:**
+**Branch rule:** If `search_listings` returns an empty list, store a helpful message in the session and stop. Otherwise, select the first matching listing and continue to `suggest_outfit`, then `create_fit_card`.
 
 **Where it lives:** `agent.py::run_agent`
 
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
+**How the query is parsed:** The query is parsed using regex and string matching to extract the description, size, and maximum price.
 
-**What moves through the session:** <!-- which fields, in what order -->
+**What moves through the session:** The parsed query goes into `search_results`, the chosen result becomes `selected_item`, that item goes into `outfit_suggestion`, and the final result goes into `fit_card`.
 
 ---
 
