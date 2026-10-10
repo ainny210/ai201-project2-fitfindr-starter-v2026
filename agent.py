@@ -196,11 +196,19 @@ def run_agent(query: str, wardrobe: dict) -> dict:
             continue
 
         # Step 2: Suggest outfit
+                
         if session["outfit_suggestion"] is None:
-            session["outfit_suggestion"] = suggest_outfit(
-                session["selected_item"],
-                session["wardrobe"],
-            )
+            try:
+                session["outfit_suggestion"] = suggest_outfit(
+                    session["selected_item"],
+                    session["wardrobe"],
+                )
+            except ModelUnavailable:
+                session["error"] = (
+                    "The model couldn't be reached. Please check the API key "
+                    "or connection and try again."
+                )
+                return session
 
             trace.step(
                 "suggest_outfit",
@@ -214,11 +222,19 @@ def run_agent(query: str, wardrobe: dict) -> dict:
             continue
 
         # Step 3: Create fit card
+                
         if session["fit_card"] is None:
-            session["fit_card"] = create_fit_card(
-                session["outfit_suggestion"],
-                session["selected_item"],
-            )
+            try:
+                session["fit_card"] = create_fit_card(
+                    session["outfit_suggestion"],
+                    session["selected_item"],
+                )
+            except ModelUnavailable:
+                session["error"] = (
+                    "The model couldn't be reached. Please check the API key "
+                    "or connection and try again."
+                )
+                return session
 
             trace.step(
                 "create_fit_card",
