@@ -236,8 +236,7 @@ fit card: The generated fit card included the selected Y2K Baby Tee and the comp
 
 **Diagnoses**
 
-All five criteria met or exceeded their targets in the before run, so there were no criterion-level misses to diagnose. The 25 evaluation runs showed that the normal path, empty-search branch, session state, fit-card output, and empty-wardrobe path all behaved as expected.
-
+All five criteria met or exceeded their targets in the before run, so there were no criterion-level misses to diagnose. However, Criterion 1's target of 4/5 was set too low because the matching-query workflow completed all three required tool calls successfully in 5/5 tries. A tighter target would be 5/5. The 25 evaluation runs also showed that the empty-search branch, session state, fit-card output, and empty-wardrobe path behaved as expected.
 ---
 
 ## Loop Trace
