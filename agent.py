@@ -212,14 +212,14 @@ def run_agent(query: str, wardrobe: dict) -> dict:
 
             trace.step(
                 "suggest_outfit",
-                inputs={
-                    "selected_item": session["selected_item"],
-                    "wardrobe": session["wardrobe"],
-                },
+                inputs=(
+                    f"selected_item={session['selected_item']['title']}; "
+                    f"wardrobe_items={len(session['wardrobe'].get('items', []))}"
+                ),
                 returned=session["outfit_suggestion"],
             )
-
             continue
+            
 
         # Step 3: Create fit card
                 
