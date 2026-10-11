@@ -297,23 +297,22 @@ The `search_listings` tool was moved behind MCP. The agent now calls it through 
      `python run_eval.py --label after` -->
 
 **What I changed:**
-
+I improved the `suggest_outfit` trace so it shows the actual selected item name and the number of wardrobe items instead of only showing the dictionary keys.
 **Which failure it was meant to fix:**
-
+No acceptance criterion failed in the before run. This change addressed an observability weakness: the previous trace only showed `dict with keys: selected_item, wardrobe`, so it was difficult to verify directly that the correct selected item was passed to `suggest_outfit`.
 ### Run Log — After
 
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
 |---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| 1. Matching query completes all three tools | 4/5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 2. Impossible query stops before suggest_outfit | 5/5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 3. Same selected_item reaches suggest_outfit | 5/5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 4. Selected clothing item appears in fit card | 4/5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 5. Empty wardrobe still produces outfit and fit card | 4/5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
 
 **Did it help, and how do I know:**
 
-<!-- If it made things worse, say that. Honestly reported, that earns full
-     credit and is more interesting than one that worked. -->
+Yes. All five acceptance criteria still met their targets at 5/5, and the trace is now more useful because it shows the actual selected item passed to `suggest_outfit`. For example, the trace now displays `selected_item=Denim Jacket — Light Wash, Cropped` instead of only listing the dictionary keys.
 
 
 
@@ -321,13 +320,7 @@ The `search_listings` tool was moved behind MCP. The agent now calls it through 
 
 ## What's Still Broken
 
-<!-- For each criterion still missed: what you'd do, and why you stopped where
-     you did. "I ran out of time" is fine if it's true. Pretending nothing is
-     left is not. -->
-
-
-
-<!-- ═════════════════════════════════════════════════════════════════════
+No acceptance criteria are currently missed. All five criteria passed 5/5 in the after run. One limitation that remains is that some trace entries still summarize dictionaries by showing only their keys, so additional trace detail could be added in the future if deeper debugging is needed.═════════════════════════════════════════════════════════════════════
 
      SUBMISSION CHECKLIST — unit 3
 
